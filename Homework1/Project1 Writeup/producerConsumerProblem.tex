@@ -1,0 +1,231 @@
+\documentclass[letterpaper,10pt,onecolumn]{IEEEtran}
+
+\usepackage{geometry}
+\geometry{margin=0.75in}
+
+\usepackage[utf8]{inputenc}
+
+\title{Project 1: Getting Acquainted}
+\author{Christian Armatas and Mihai Dan}
+\date{October 11, 2016}
+
+\begin{document}
+
+    \begin{center}
+        \begin{minipage}[h]{\textwidth}
+            \maketitle
+        \end{minipage}
+    \end{center}
+    
+    \begin{center}
+        \section*{Abstract}
+        This document contains a log of commands used to perform the requested actions, an explanation of every flag listed in the qemu command-line, answers to the concurrency problem, a version control log, and a work log. The solution to Project 1 can be depicted by consulting the formally mentioned sections. The purpose of this project was to get acquainted with the tools necessary, such as the kernel and virtual machine, as well as to familiarize us with multithreading and the associated challenges. 
+    \end{center}
+    
+    \newpage
+    
+    \section*{Command Log}
+    The command line arguments used to complete Homework 1. Actions performed include setting up the virtual machine, building the kernel, and starting the VM using the new kernel.
+    \begin{itemize}
+        \item ssh armatasc@os-class.engr.oregonstate.edu
+        \item cd /scratch/fall2016
+        \item mkdir cs444-017
+        \item cd cs444-017
+        \item git clone git://git.yoctoproject.org/linux-yocto-3.14
+        \item cp environment-setup-i586-poky-linux /scratch/fall2016/cs444-017
+        \item cp core-image-lsb-sdk-qemux86.ext3 config-3.14.26-yocto-qemu /scratch/fall2016/cs444-017
+        \item cp bzImage-qemux86.bin config-3.14.26-yocto-qemu /scratch/fall2016/cs444-017
+        \item source /scratch/opt/environment-setup-i586-poky-linux 
+        \item qemu-system-i386 -gdb tcp::5517 -S -nographic -kernel bzImage-qemux86.bin -drive \-file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb \- -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug"
+        \item gdb
+        \begin{itemize}
+            \item target remote :5517
+            \item continue
+        \end{itemize}
+        \item cp /scratch/fall2016/files/config-3.14.26-yocto-qemu /scratch/fall2016/cs444-017/yocto/.config
+        \item make -j4 all
+        \item source ./environment-setup-i586-poky-linux
+        \item qemu-system-i386 -gdb tcp::5517 -S -nographic -kernel bzImage-qemux86.bin -drive \-file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb \- -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug"
+        \item gdb
+        \begin{itemize}
+            \item file vmlinux
+            \item target remote :5517
+            \item continue
+        \end{itemize}
+    \end{itemize}
+    
+    \subsection*{}Command used to give Mihai permissions to the folder.
+    \begin{itemize}
+        \item ./\texttt{acl\_open} -r /scratch/fall2016/cs444-017 danm
+    \end{itemize}
+    
+    \vspace{7mm}
+    
+    \section*{QEMU Command-Line Flags}
+    The command line flags for the QEMU command are listed below, along with their functionality.
+    \begin{itemize}
+        \item -gdb
+        \begin{itemize}
+            \item launches program in debugging mode
+        \end{itemize}
+        \item tcp::5517
+        \begin{itemize}
+            \item specifies the TCP port number to the one assigned in class
+        \end{itemize}
+        \item -S
+        \begin{itemize}
+            \item does not launch CPU on start-up, allows for manual launch
+        \end{itemize}
+        \item -nographic
+        \begin{itemize}
+            \item disables graphical output
+        \end{itemize}
+        \item -kernel bzImage-qemux86.bin
+        \begin{itemize}
+            \item uses specified file as the kernel image
+        \end{itemize}
+        \item -drive file=core-image-lsb-sdk-qemux86.ext3,if=virtio
+        \begin{itemize}
+            \item specifies desired drive file and decides which type of interface the drive is connected on
+        \end{itemize}
+        \item -enable-kvm
+        \begin{itemize}
+            \item enables full KVM Virtualization support
+        \end{itemize}
+        \item -net none
+        \begin{itemize}
+            \item override default configuration and indicate that no network devices should be configured
+        \end{itemize}
+        \item -usb
+        \begin{itemize}
+            \item enables USB driver
+        \end{itemize}
+        \item -localtime
+        \begin{itemize}
+            \item sets time to local time
+        \end{itemize}
+        \item -no-reboot
+        \begin{itemize}
+            \item exits instead of rebooting
+        \end{itemize}
+        \item --append "root=/dev/vda rw console=ttyS0 debug"
+        \begin{itemize}
+            \item command line parameters given to the kernel
+        \end{itemize}
+    \end{itemize}
+    
+    \vspace{7mm}
+    
+    \section*{Version Control Log}
+    \begin{tabular}{ |c|c| }
+        \hline
+    	Created the main source control directory on "os-class /scratch/fall2016" & October 3, 2016   14:37:02 \\
+    	\hline
+		Added the yocto envirnment dir, config file, env-setup file, and kernel to main dir & October 5, 2016   16:21:54 \\ 
+		\hline
+		Created the "vmlinux" kernel in our main dir and confirmed it ran & October 10, 2016  10:30:15 \\
+		\hline
+		Completed the "rdrand" vs "mtrand" code in C and ASM; Implemented the functions & October 10, 2016  22:10:28\\
+		\hline
+		Created the Makefile & October 11, 2016  18:12:36 \\
+		\hline
+		Finalized comments in the "concurrencyProb.c" file & October 11, 2016  19:42:06 \\
+		\hline
+		Completed the final copy of "concurrencyProb.c" & October 11, 2016  21:02:17 \\
+		\hline
+	\end{tabular}
+    
+    \vspace{7mm}
+    
+    \section*{Work Log}
+    
+    \begin{itemize}
+    \item Sun, 10/2
+        \begin{itemize} 
+    	    \item Took a look at the assignment and read through the requirements	
+    		\item Broke the assignment into a few main sections: Setup, C/ASM code, and write-up
+    	\end{itemize}
+    \item Mon, 10/3
+        \begin{itemize} 
+    		\item Christian re-downloaded and -re-configured his putty terminal + file transfer software on his new PC
+    		\item Re-familiarized ourselves with the terminal, os-class server, and bash
+    		\item Created our "/scratch/fall2016/cs444-017" as our source control repo on os-class...
+    		\item Didn't quite understand how to get the yoctoproject file, switch the tag, or get the config/kernel/drive files
+    	\end{itemize}
+    \item Wed, 10/5
+        \begin{itemize} 
+    		\item Used the command "git clone git://git.yoctoproject.org/linux-yocto-3.14" to get a copy of the environment
+    		\item Navigated to the location of the environment configuration script: "cp environment-setup-i586-poky-linux /scratch/fall2016/cs444-017"
+    		\item Navigated to the location of the starting kernel and drive file: "cp bzImage-qemux86.bin core-image-lsb-sdk-qemux86.ext3 config-3.14.26-yocto-qemu /scratch/fall2016/cs444-017"
+    		\item Command to open QeMu:
+    		\item This launches qemu in debug mode w/ a halted CPU
+    		\item To run the VM, connect gbd (from yocto: GDB) to remote target port 5517; This causes the OS to boot
+    		\item Still need to buid instance of kernel and ensure it boots in the VM
+    	\end{itemize}
+    \item Sat, 10/8
+        \begin{itemize} 
+    		\item Mihai looked into the concurrency exercise and did some seperate research regarding the solution
+    		\item Christian tried to run the "qemu-system-i386" command but ran into complications
+    	\end{itemize}
+    \item Sun, 10/9
+        \begin{itemize} 
+    		\item Looked into the "qemu-system-i386" command and realized we were only able to call "qemu-img" and "qemu-io"
+    		\item Reading over the "You must source the appropriate file..." line, we relalized that meant the literal command, SOURCE
+        	\item 'source /scratch/opt/environment-setup-i586-poky-linux'	->	This gave us the "Qemu" commands
+    		\item "qemu-system-i386 ..." now gives us a frozen terminal (it appeared). Though this is the "halted CPU" mentioned in the assignment; Now we need to connect the GDB
+    		\item Inside the yocto environment, "make menuconfig" will bring up the kernel configuration menu
+    		\item Mihai ran 'gdb' inside the yocto environment (while the VM was in debug mode)...
+    		\item How to target the same port via yocto gdb:  'target remote :5517'
+    		\item "... and continue the process" meant the literal command "continue" after 'target remote', inside gdb
+    		\item AND WE ARE IN! To login, we used "root" with no password
+    		\item Can't do much inside here yet	-	Need to figure out how to copy "config-..." script to our "SRC ROOT"
+    		\item Shutdown QEMU:  'shutdown -H now 
+    	\end{itemize}
+    \item Mon, 10,10
+        \begin{itemize} 
+    		\item Christian figured out how to copy the config file: 'cp /scratch/fall2016/files/config-3.14.26-yocto-qemu /scratch/fall2016/cs444-017/linux-yocto-3.14/.config' This prompted "Overwrite .config?"		-	Y	-	Enter
+    		\item After about 5 minutes (i literally got coffee, as recommended), the kernel "vmlinux" was created! 'cp vmlinux /scratch/fall2016/cs444-017'	-	Enter
+    		\item NOW, from the gdb, 'file vmlinux' will read from the built kernel: 'target remote :5517' will connect to our port	-	'continue'	-	This runs our kernel in the VM on port 5517!
+    		\item Mihai began the "rand" and ASM research (what we needed to do in ASM) and Christian began coding the concurrency
+    		\item Using ASM, we need to check if "rdrand" or "mtrand" is acceptable for use... Mihai completed the rand functions
+    		\item The minimal concurrency model (w/ no wait times on "work") compiled
+    		\item Adding producer/consumer conditions and wait times caused only the production, until the buffer was full
+    		\item After the buffer fills, the consumer will begin consuming all 32 buffers... 
+    		\item Will not have time to complete the mess of issues within the concurrency problem tonight...
+    	\end{itemize}
+    \item Tues, 10/11
+        \begin{itemize} 
+    	    \item We implemented the rand switching and ASM code into the "concurrencyProb.c"
+    		\item Mihai completed the TeX document as Christian debugged the concurrency code...
+    		\item We went back to a previous version of our code because it was more simple
+    		\item After walking through, checking over, and changing conditions for sleep/wait/etc., the code worked! Now, the producer will produce structs into the buffer as the consumption occurs (including random wait times)
+    	    \item Created a simple make file, to where "make all" creates the executable for "concurrencyProb.c"
+    		\item Completed some finalizing and touching up work (removing debugging printf's, adding helpful comments, etc.)
+    		\item Completed the assignment!
+    	\end{itemize}
+    \end{itemize}
+    
+    \vspace{7mm}
+    
+    \section*{Questions}
+    \begin{enumerate}
+        \item What do you think the main point of this assignment is?
+        \begin{itemize}
+            \item The purpose of this assignment is to familiarize us with multithreading and the associated challenges. Designing and creating a solution for this problem requires parallel thinking and research on synchronization. The problem presented consisted of producer and consumer threads which added and removed items to a limited size buffer. To a void conflict, the buffer had to remain locked whenever a thread was altering it.
+        \end{itemize}
+        \item How did you personally approach the problem? Design decisions, algorithm, etc.
+        \begin{itemize}
+            \item In class and from the assignment, we learned this problem would require the use of multiple threads, structs, and random numbers (generated in ASM). First, we broke this down into a few portions, the C code and the ASM code. The ASM will simply check/calculate a random value from "rdrand" or "mtrand", depending on which function can run. The C code will need to have simultaneous interactions between the producers, consumers, and the buffer containing all of this data. We designed a sudo-code outline displaying where we need to lock/unlock the mutex, signal the producer/consumer conditions, wait on producer/consumer conditions, and sleep in the main, producer, and consumer functions. To check how the buffer was filling up, when the producer created a struct, and when the consumer consumed a struct, we used print statements.
+        \end{itemize}
+        \item How did you ensure your solution was correct? Testing details, for instance.
+        \begin{itemize}
+            \item In order to check the correctness of our algorithm, we checked the output from the program. Print statements were placed before and every after production or consumption, depicting the buffer size, sleep time, and randomly generated number.
+        \end{itemize}
+        \item What did you learn?
+        \begin{itemize}
+            \item One of the biggest take-aways from this project is learning about the importance of locking the buffer when it is in use. This allows for the buffer to only be modified by one thread at a time, avoiding any conflicts. The project also allowed for a reminder on how to use threads in C, as well as introducing how to lock using Mutex. Another aspect we found interesting is being able to use assembly code inside of C code.
+        \end{itemize}
+    \end{enumerate}
+    
+    
+\end{document}
