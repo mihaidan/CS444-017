@@ -38,7 +38,7 @@
         
         \vspace{3mm}
         
-        Windows implements a completely different approach for process management. Processes in Windows are represented by an executive process structure, or EPROCESS. This process structure contains information relative to a process, as well as pointers to other necessary data structures. Components of a Windows process include a virtual address space, executable code, open handles to system objects, security context, unique process ID, environment variables, minimum and maximum working set sizes and  priority class, which will be discussed in the \textit{CPU Scheduling} section. Processes have a primary thread which executes the program, but may have multiple threads, depending on the complexity of the job. These threads are represented by the executive thread structure ETHREADS, which is explained in the \textit{Threads} section. In order to create a new process, a call must be made to the \texttt{CreateProcess();} function. Windows does not implement a parent-child relationship as a newly created process runs independently of the creating process. Below is a C++ implementation of the \texttt{CreateProcess();} function, as well as an explanation of its parameters.
+        Windows implements a completely different approach for process management. Processes in Windows are represented by an executive process structure, or EPROCESS\cite{windowspt}. This process structure contains information relative to a process, as well as pointers to other necessary data structures. Components of a Windows process include a virtual address space, executable code, open handles to system objects, security context, unique process ID, environment variables, minimum and maximum working set sizes and  priority class, which will be discussed in the \textit{CPU Scheduling} section. Processes have a primary thread which executes the program, but may have multiple threads, depending on the complexity of the job. These threads are represented by the executive thread structure ETHREADS, which is explained in the \textit{Threads} section. In order to create a new process, a call must be made to the \texttt{CreateProcess();} function. Windows does not implement a parent-child relationship as a newly created process runs independently of the creating process. Below is a C++ implementation of the \texttt{CreateProcess();} function, as well as an explanation of its parameters.
         
         \lstset{language=C++,
                 basicstyle=\ttfamily,
@@ -85,7 +85,7 @@
         
         \vspace{3mm}
         
-        There are two types of threads in Linux, user-space and kernel-space threads. User-space threads avoid the kernel and manage the tables themselves. Each thread completes their quantum by calling an explicit switch, sending a signal or performing an action that involves the switcher. Additionally, a timer is implemented to terminate any process exceeding their quantum. User-space threads are created and manipulated with the \texttt{pthread} command found in the pthread library. Kernel-space threads are implemented in the kernel using several tables, allocating a task per table of threads. Threads are automatically scheduled within the quantum of each process. Kernel-space threads are created and manipulated by the \texttt{kthread} command, found in the LinuxThreads package. Processes may implement one or both thread types.
+        There are two types of threads in Linux, user-space and kernel-space threads\cite{linuxthread}. User-space threads avoid the kernel and manage the tables themselves. Each thread completes their quantum by calling an explicit switch, sending a signal or performing an action that involves the switcher. Additionally, a timer is implemented to terminate any process exceeding their quantum. User-space threads are created and manipulated with the \texttt{pthread} command found in the pthread library. Kernel-space threads are implemented in the kernel using several tables, allocating a task per table of threads. Threads are automatically scheduled within the quantum of each process. Kernel-space threads are created and manipulated by the \texttt{kthread} command, found in the LinuxThreads package. Processes may implement one or both thread types.
         
         \vspace{3mm}
         
@@ -102,7 +102,7 @@
         
         \vspace{3mm}
         
-        Much like processes, Windows takes a different approach to thread management. Threads in Windows are represented by the executive thread structure, or ETHREADS. Similarly to processes, in order to create a thread, a call must be made to the \texttt{CreateThread} function. The \texttt{CreateThread} function call instigates several calls to other functions.
+        Much like processes, Windows takes a different approach to thread management. Threads in Windows are represented by the executive thread structure, or ETHREADS\cite{windowspt}. Similarly to processes, in order to create a thread, a call must be made to the \texttt{CreateThread} function. The \texttt{CreateThread} function call instigates several calls to other functions.
         
         \begin{itemize}
             \item PspAllocateThread - creates and initializes of the executive thread object
@@ -148,7 +148,7 @@
         
         \vspace{3mm}
         
-        FreeBSD uses a similar scheduling system, but with a few notable differences. The ULE scheduler provides fair scheduling for processes and threads on FreeBSD. A process is categorized by complexity and amount of I/O requests. The first notable difference between the two schedulers is that the ULE scheduler favors interactive programs, such as text editors. The reasoning behind this is because these processes exhibit short bursts of CPU usage in between waiting for user input. Much like CFS, the ULE Scheduler makes use of two queues, \textit{current} and \textit{next}. A process is categorized in either of these based on priority level and I/O intensity. Once all processes and threads in the \textit{current} queue have been executed, the \textit{current} queue is switched with the \textit{next}. Quantum size is dependent on CPU usage and priority level, and is recalculated every time a slice expires. 
+        FreeBSD uses a similar scheduling system, but with a few notable differences. The ULE scheduler provides fair scheduling for processes and threads on FreeBSD\cite{ulesched}. A process is categorized by complexity and amount of I/O requests. The first notable difference between the two schedulers is that the ULE scheduler favors interactive programs, such as text editors. The reasoning behind this is because these processes exhibit short bursts of CPU usage in between waiting for user input. Much like CFS, the ULE Scheduler makes use of two queues, \textit{current} and \textit{next}. A process is categorized in either of these based on priority level and I/O intensity. Once all processes and threads in the \textit{current} queue have been executed, the \textit{current} queue is switched with the \textit{next}. Quantum size is dependent on CPU usage and priority level, and is recalculated every time a slice expires. 
         
         \vspace{3mm}
         
@@ -192,7 +192,12 @@
     \vspace{3mm}
     
     \subsection*{CPU Scheduling}
-        As previously mentioned, Linux uses the Completely Fair Scheduler (CFS), FreeBSD uses the ULE scheduler, and Windows uses the NT class scheduler. While they may share characteristics, these schedulers are inherently different. The ULE scheduler relies heavily on queues and allocation of CPU time slices. Processes are assigned a priority level which determines start time of execution. The ULE scheduler prioritizes processes which request I/O, allowing for seemingly fast response time to user input. The CFS focuses more on how much time a process has spent in the CPU. In other words, the scheduler tries to allocate fair CPU usage time to each process. A notable difference between the CFS and the ULE scheduler is the program code length. The ULE scheduler code length is around 3000 lines, while the CFS is over 6000 lines.
+        As previously mentioned, Linux uses the Completely Fair Scheduler (CFS), FreeBSD uses the ULE scheduler, and Windows uses the NT class scheduler. While they may share characteristics, these schedulers are inherently different. The ULE scheduler relies heavily on queues and allocation of CPU time slices. Processes are assigned a priority level which determines start time of execution. The ULE scheduler prioritizes processes which request I/O, allowing for seemingly fast response time to user input. The CFS focuses more on how much time a process has spent in the CPU. In other words, the scheduler tries to allocate fair CPU usage time to each process. A notable difference between the CFS and the ULE scheduler is the program code length. The ULE scheduler code length is around 3000 lines, while the CFS is over 6000 lines
         As to no surprise, the Windows operating system implements a different method of CPU scheduling. Each process is assigned to a priority level (0 - 31), as well as a priority class, mentioned above. The scheduler performs Round Robin scheduling starting with the highest priority class thread in the highest priority level. This method is quite different than the Linux implementation because it heavily favors high priority processes, as opposed to fair distribution.
+        
+    \newpage
+        
+    \bibliographystyle{IEEEtran}
+    \bibliography{cite.bib}
 
 \end{document}
