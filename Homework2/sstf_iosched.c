@@ -5,7 +5,7 @@
 |	Christian Armatas		|
 |	Mihai Dan				|
 |	CS 444 - Project 2		|
-|	LOOK I/O Scheduler		|
+|	C_LOOK I/O Scheduler	|
 |							|
 |---------------------------|
 
