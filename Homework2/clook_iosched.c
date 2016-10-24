@@ -21,40 +21,88 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 
+int diskhead = -1;
 
 // STRUCT:  clook data with pos 
 struct clook_data
 {
 	struct list_head queue;
-	sector_t pos;
 }
 
 // Merge Requests
 stataic void clook_merged_requests(struct request_queue *q, struct request *rq, struct request *next)
 {
+	// Delete request from list, then sort
 	list_del_init(&next->queuelist);
+	elv_dispatch_sort(q, next);
 }
 
 // Dispatch first request in queue
+/* MADE CHANGES HERE */
 static int clook_dispatch(struct request_queue *q, int force)
 {
 	struct clook_data *nd = q->evelator->elevator_data;
 	struct request *rq;
+	char direction;
 	
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
 	if (rq) {
-		list_det_init(&rq->queuelist);
+		// Delete request from list, then sort
+		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
+		
+		// Assign diskhead to position of rq
+		diskhead = blk_rq_pos(rq);
+		
+		// Check direction for read or write
+		if(rq_data_dir(rq) == READ)
+			direction = 'R';
+		else
+			direction = 'W';
+		printk("[CLOOK] dsp %c %lu\n", direction, blk_rq_pos(rq));
+		
 		return 1;
 	}
 	return 0;
 }
 
 // Add request to queue
+/* MADE CHANGES HERE */
 static void clook_add_request(struct request_queue *q, struct request *rq)
 {
 	struct clook_data *nd = q->elevator->elevator_data;
-	list_add_tail(&rq->queuelist, &nd->queue);
+	struct list_head *current = NULL;
+	
+	// Iterate through the request_queue elevator
+	list_for_each(current, &nd->queue)
+	{
+		// Set cur to current list_entry
+		struct request *cur = list_entry(current, struct request, queuelist)
+		
+		// If cur position is greater than diskhead...
+		if (blk_req_pos(cur) > diskhead)
+		{
+			// If the cur position < diskhead OR rq position < cur position... break and add to current position
+			if(blk_rq_pos(cur) < diskhead || blk_rq_pos(rq) < blk_rq_pos(cur))
+				break;
+			
+		} else {
+			// cur pos less than disk head
+			// If the cur position < diskhead AND rq position < cur position... break and add to current position
+			if(blk_rq_pos(cur) < diskhead && blk_rq_pos(rq) < blk_rq_pos(cur))
+				break;
+		}
+	}
+	
+	// Add current request to request queue
+	list_add_tail(&rq->queuelist, current);
+	
+	// Check direction for read or write
+	if(rq_data_dir(rq) == READ)
+		direction = 'R';
+	else
+		direction = 'W';
+	printk("[CLOOK] dsp %c %lu\n", direction, blk_rq_pos(rq));
 }
 
 // Get former request
@@ -64,7 +112,8 @@ static struct request * clook_former_request(struct request_queue *q, struct req
 
         if (rq->queuelist.prev == &nd->queue)
 			return NULL;
-        return list_prev_entry(rq, queuelist);
+        
+		return list_prev_entry(rq, queuelist);
 }
 
 // Initialize Queue
@@ -104,6 +153,7 @@ static void clook_exit_queue(struct elevator_queue *e)
 }
 
 // STRUCT:  Specify our 'elevator_clook' functions for the elevator
+/* MADE CHANGES HERE */
 static struct elevator_type elevator_clook = {
 	.ops = {
 		.elevator_merge_req_fn          = clook_merged_requests,
