@@ -1,0 +1,95 @@
+[33mcommit 6ee538581f0220d01b00c462053a45505dbb3c7d[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Mon Oct 24 11:34:22 2016 -0700
+
+    Changed file name to "clook-iosched.c" and fixed compile time bugs, upon running "make -j4 all" with the CLOOK scheduler.
+
+[33mcommit 3311943a7e7ace07f60942c9e9fd432d755db5c5[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Sun Oct 23 17:32:43 2016 -0700
+
+    Made changes to "clook_add_request" and "clook_dispatch"...
+
+[33mcommit a4d87e49ed785ff4153505f28e6de324abef477f[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Sun Oct 23 15:37:14 2016 -0700
+
+    Delete SSTF file
+
+[33mcommit 37726f00ffcdd4111f33a1d0dc7e359a23d4e201[m
+Merge: be2dbac a5a4518
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Sun Oct 23 15:35:40 2016 -0700
+
+    Merge branch 'master' of https://github.com/mihaidan/CS444-017
+
+[33mcommit be2dbac2be6aae55a87317aa0f4b76f7b572ab52[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Sun Oct 23 15:34:51 2016 -0700
+
+    Changing SSTF to CLOOK.
+
+[33mcommit a5a4518736661a77cd9576824b2fff599318b0f4[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Tue Oct 18 20:01:51 2016 -0700
+
+    Added citations.
+
+[33mcommit ed01e78741ea2a3ad621a56970bc4a64c3fe8e92[m
+Merge: 12ae3de ff4a851
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Tue Oct 18 17:51:12 2016 -0700
+
+    Merge branch 'master' of https://github.com/mihaidan/CS444-017
+
+[33mcommit 12ae3de8d7526492635e16d44c5cd3812db1d130[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Tue Oct 18 17:47:49 2016 -0700
+
+    clean-up
+
+[33mcommit 63a623621e60ae7a96e29e8d7dc388bb38145bdb[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Tue Oct 18 17:42:09 2016 -0700
+
+    Mihai WA1 -missing bib
+
+[33mcommit ff4a851962df29cef12dad1b7674d5bf70310d5c[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Mon Oct 17 17:34:20 2016 -0700
+
+    Revert "Revert "First edits to the NOOP implementation, using the C_LOOK method...""
+    
+    This reverts commit f983c5009832f9aecdbdb83446ca9d8a05be4747.
+
+[33mcommit f983c5009832f9aecdbdb83446ca9d8a05be4747[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Mon Oct 17 17:34:10 2016 -0700
+
+    Revert "First edits to the NOOP implementation, using the C_LOOK method..."
+    
+    This reverts commit 2984f94d10c1f5c08ab32b9da858bbe56f610fa3.
+
+[33mcommit 2984f94d10c1f5c08ab32b9da858bbe56f610fa3[m
+Author: armatasc <armatasc@onid.oregonstate.edu>
+Date:   Mon Oct 17 17:33:25 2016 -0700
+
+    First edits to the NOOP implementation, using the C_LOOK method...
+
+[33mcommit 993621e28a4af7638f2dd09c7292a71265949456[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Mon Oct 17 17:22:13 2016 -0700
+
+    Set up for project 2
+
+[33mcommit 0ea3b71a5ba3a3e2c2bae07be3885e0949369ad7[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Mon Oct 17 17:15:37 2016 -0700
+
+    Added Homework1
+
+[33mcommit 56f0123fd4a867447af033cf7674ffd8ffa7d061[m
+Author: mihaidan <danm@oregonstate.edu>
+Date:   Mon Oct 17 17:05:44 2016 -0700
+
+    Initial commit
