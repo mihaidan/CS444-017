@@ -1,0 +1,19 @@
+14a15,23
+> config IOSCHED_CLOOK
+> 	tristate "CLOOK I/O scheduler"	
+> 	default y
+> 	---help---
+> 	  The CLOOK I/O scheduler uses a one-way disk scheduling algorithm to process
+> 	  read and write requests. This scheduler is similar to the LOOK algorithm,
+> 	  the only difference being it scans in one direction, returning to the top
+> 	  of the queue once it reaches the end, versus changing directions.    
+> 
+48a58,60
+> 	config DEFAULT_CLOOK
+> 		bool "CLOOK" if IOSCHED_CLOOK=y
+> 
+65c77,78
+< 	
+---
+> 	default "clook" if DEFAULT_CLOOK
+> 
