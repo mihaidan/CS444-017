@@ -1,8 +1,7 @@
-C=gcc 
-CFLAGS=-Wall
+pdf: producerConsumerProblem.tex
+	pdflatex ./producerConsumerProblem.tex
 
-all: 
-	gcc -pthread -o concurrencyProb concurrencyProb.c mt19937ar.c
-
+all: pdf
+	
 clean:
-	rm concurrencyProb
+	rm -f .{ps,pdf,log,aux,out,dvi,bbl,blg}
