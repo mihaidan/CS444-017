@@ -50,3 +50,24 @@ void print_list(data_struct *linked_list){
 
 }
 
+
+/*
+
+Searchers:
+	-examine the list
+	-they can execute concurrently with each other
+	
+Inserters:
+	-add new items to the end of the list
+	-insertions must be mutually exclusive
+		-prevents two inserters from inserting 
+		 new items at about the same time
+	-one insert can proceed in parallel with any number of searches
+	
+Deleters: 
+	-remove items from anywhere in the list
+	-at most one deleter process can access the list at a time
+	-deletion must be mutually exclusive with searches and insertions
+
+*/
+
