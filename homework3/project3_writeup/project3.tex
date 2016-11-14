@@ -24,7 +24,7 @@
     
     \begin{center}
         \section*{Abstract}
-        Abstract
+        This document contains the design for necessary encrypted block device algorithms, a version control log table, a work log, and answers to the provided questions. The solution to Project 3 can be deduced from the previously mentioned sections, as well as the implementation. The purpose of this project was to better our understanding of block device functionality, as well as implementation of encryption API's.
     \end{center}
     
     
@@ -44,12 +44,27 @@
         
         \vspace{1mm}
         
+        \begin{center}
         \def\arraystretch{1.1}
-        \begin{tabular}{ | p{16.75cm} | }
+        \begin{tabular}{ | p{8cm} | }
             \hline
-            
+            commit 081dfb312911bf41114a7c1f4263230e635c6d49 \\
+            Author: mihaidan <danm@oregonstate.edu> \\
+            Date:   Sun Nov 13 17:21:38 2016 -0800 \\
+            commit message: proj3 update \\
+            \hline
+            commit d109d23eb57d39cddaa57fcd71a510f0474b552e \\
+            Author: mihaidan <danm@oregonstate.edu> \\ 
+            Date:   Sun Nov 13 16:59:24 2016 -0800 \\
+            commit message: update hw3 \\
+            \hline
+            commit f647a4e2ae916fcbadf21bbad1a1b3899341969c \\
+            Author: mihaidan <danm@oregonstate.edu> \\
+            Date:   Sun Nov 13 12:07:34 2016 -0800 \\
+            commit message: project 3 added \\
             \hline
         \end{tabular}
+        \end{center}
 
 
     
@@ -82,19 +97,19 @@
     \begin{enumerate}
         \item What do you think the main point of this assignment is?
         \begin{itemize}
-            \item Answer.
+            \item The main point of this assignment was to better our understanding of block device functionality by implementing an encrypted block device into our virtual machine. We replaced the current RAM Disk Driver with our own implementation, which allowed for reading and writing. The block device encrypts the data if \textit{write()} is called and decrypts it if \textit{read()} is called. The encryption and decryption was implemented using the Crypto API. Another learning opportunity in this assignment was using the Crypto API. After some research, we found that the API is capable of encrypting/decrypting and copying the data to the destination, which is a really handy feature.
         \end{itemize}
         \item How did you personally approach the problem? Design decisions, algorithm, etc.
         \begin{itemize}
-            \item Answer.
+            \item Before looking into encryption at all, we did some research on implementation of block devices. After better understanding the process, we examined the existing RAM Disk Driver for an example of implementation. Further research led us to finding an example of a simple block device, which is what our design is based of off. The Crypto API portion of the assignment is designed such that a \textit{write()} call will encrypt and a \textit{read()} call will decrypt. This required careful evaluation of the logic structure.
         \end{itemize}
         \item How did you ensure your solution was correct? Testing details, for instance.
         \begin{itemize}
-            \item Answer. 
+            \item In order to ensure that the encrypted block device was working correctly we built a new virtual machine with the new settings. The first sign that the solution was correct was error-free compilation. Print statements were also included after both the encryption and decryption. To ensure correctness, the print statements included both the encrypted and decrypted data. This also allowed for comparison of data, which proved our solution.
         \end{itemize}
         \item What did you learn?
         \begin{itemize}
-            \item Answer.
+            \item This project offers a lot of insight on I/O handling in Linux, specifically block devices. We learned where a block device lives within the operating system, as well as how to implement a working version. Beyond the block device, we learned how to use the Crypto API to either encrypt or decrypt data. 
         \end{itemize}
     \end{enumerate}
     
