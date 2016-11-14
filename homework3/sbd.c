@@ -89,17 +89,17 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector, unsigned long 
 		}
 		
 		/* Print the decrypted data */
-		printk("Decrypted:\n");
+		printk("[W] Decrypted:\n");
 		for(i = 0; i < nbytes; i++){
 			printk("%u", (unsigned) *(source+i));
 		}
 		
 		/* Print the encrypted data */
-		printk("Encrypted:\n");
+		printk("[W] Encrypted:\n");
 		for(i = 0; i < nbytes; i++){
 			printk("%u", (unsigned) *(destination+i));
 		}
-		
+	// else it's a read request
     }else{
         destination = buffer;
 		source = dev->data + offset;
@@ -110,13 +110,13 @@ static void sbd_transfer(struct sbd_device *dev, sector_t sector, unsigned long 
 		}
 		
 		/* Print the decrypted data */
-		printk("Decrypted:\n");
+		printk("[R] Decrypted:\n");
 		for(i = 0; i < nbytes; i++){
 			printk("%u", (unsigned) *(source+i));
 		}
 		
 		/* Print the encrypted data */
-		printk("Encrypted:\n");
+		printk("[R] Encrypted:\n");
 		for(i = 0; i < nbytes; i++){
 			printk("%u", (unsigned) *(destination+i));
 		}
