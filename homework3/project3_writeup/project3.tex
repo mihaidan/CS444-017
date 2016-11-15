@@ -32,7 +32,17 @@
     
     
     \section*{Design for Implementation of Necessary Algorithms}
-
+        Project 3 required forethought and design on two specific parts, the block device and Crypto API algorithm. The basic design of the block device algorithm includes initialization and request handling. In order to initialize the block device, the following steps must be followed.
+        \begin{itemize}
+            \item Allocate \texttt{gendisk} struct and request queue. The \texttt{gendisk} struct consists of the necessary block device components, while the request queue is used to handle incoming requests.
+            \item Initialize \texttt{gendisk} struct and set capacity. The capacity can be calculated by multiplying the number of disks by the individual block size (512 bytes).
+            \item Add disk to the system.
+            \item Unregister the disk and free the request queue. This is done after the process reached completion.
+        \end{itemize}
+        
+        The request handling is implemented after the block device is initialized and added to the system. The structure consists of the \texttt{request(...)} function, and the helper function, \texttt{transfer(...)}. The \texttt{request(...)} function is responsible for getting the request and checking validity of its type. If the request satisfies the criteria, it is passed to the \texttt{transfer(...)} function. The \texttt{transfer(...)} function is responsible for performing either a \texttt{read} or \texttt{write}, depending on the request. This function is also where the Crypto API is implemented.
+        
+        The logic behind the Crypto API is fairly simple. Data is encrypted before being written to the block device and is decrypted before being read from it. The \texttt{crypto\_cipher\_encrypt\_one(...)} / \texttt{crypto\_cipher\_decrypt\_one(...)} allows for three parameters, cipher, destination, and source. The data is encrypted/decrypted and written directly to the destination. This leaves us with deciding between when to encrypt or decrypt, as well as correctly assigning the source and destination. 
 
     \vspace{6mm}
     
@@ -42,24 +52,29 @@
             Table organized by most recent commit.
         \end{center}
         
-        \vspace{1mm}
+        \vspace{0.5mm}
         
         \begin{center}
         \def\arraystretch{1.1}
         \begin{tabular}{ | p{8cm} | }
             \hline
-            commit 081dfb312911bf41114a7c1f4263230e635c6d49 \\
+            commit b903ef297248bd91a53f15df49d6267d9f99c52e \\
             Author: mihaidan <danm@oregonstate.edu> \\
+            Date:   Sun Nov 13 23:10:10 2016 -0800 \\
+            commit message: write-up progress \\
+            \hline
+            commit 081dfb312911bf41114a7c1f4263230e635c6d49 \\
+            Author: mihaidan (danm@oregonstate.edu) \\
             Date:   Sun Nov 13 17:21:38 2016 -0800 \\
             commit message: proj3 update \\
             \hline
             commit d109d23eb57d39cddaa57fcd71a510f0474b552e \\
-            Author: mihaidan <danm@oregonstate.edu> \\ 
+            Author: mihaidan (danm@oregonstate.edu) \\ 
             Date:   Sun Nov 13 16:59:24 2016 -0800 \\
             commit message: update hw3 \\
             \hline
             commit f647a4e2ae916fcbadf21bbad1a1b3899341969c \\
-            Author: mihaidan <danm@oregonstate.edu> \\
+            Author: mihaidan (danm@oregonstate.edu) \\
             Date:   Sun Nov 13 12:07:34 2016 -0800 \\
             commit message: project 3 added \\
             \hline
@@ -75,17 +90,21 @@
     
     
     \begin{itemize}
-        \item Day, date
+        \item Friday, 11/11:
+            \begin{itemize}
+                \item We read over the assignment and got a better understanding of the project. We did minimal research about block device implementation, as well as the Crypto API.
+                \item After some research, we decided to design a solution through pseudocode to ease the process of implementation. This pseudocode included a rough idea of how to set up and initialize a block device.
+                \item We created and set up the files necesarry for the solution and the write up.
+            \end{itemize}
+        \item Saturday, 11/12:
             \begin{itemize} 
-                \item Stuff.
+                \item We began researching the assignment in more depth, which is when we found an example implementation of a simple block device driver. Additionally, we found a resource which explained the structure of the device driver and outlined the basic operations for conveying a request.
+                \item From these resources, we were able to edit the \texttt{sbd\_tranfer(...)} and \texttt{struct sbd\_device} to suit the crypto API for data crypography.
+                \item We completed the block device driver, ran \texttt{make menuconfig} to reconfigure and select our new device driver, and recompiled the kernel. We knew the device driver was successfully implemented when we ran our kernel (via GBD) and noticed kernel print statements we programmed into our \texttt{sbd.c} file.
         	\end{itemize}
-        \item Day, date
+        \item Monday, 11/14:
             \begin{itemize} 
-                \item Stuff.
-        	\end{itemize}
-        \item Day, date
-            \begin{itemize} 
-                \item Stuff.
+                \item The last portion of the assignment was to create an ext2 filesystem on our device. To do so, we ran the \texttt{mkfs -t ext2 /dev/sbd0} command.
         	\end{itemize}
     \end{itemize}
     
