@@ -55,11 +55,10 @@
  * the freelist will only be done so on pages residing on the same node,
  * in order to prevent random node placement.
  */
- 
- /* Additional includes */
+
 #include <linux/syscalls.h>
 #include <linux/linkage.h>
-
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
@@ -77,10 +76,6 @@
 #include <linux/atomic.h>
 
 #include "slab.h"
-
-unsigned long page_count2;
-unsigned long availability;
-
 /*
  * slob_block has a field 'units', which indicates size of block if +ve,
  * or offset of next block if -ve (in SLOB_UNITs).
@@ -94,6 +89,9 @@ typedef s16 slobidx_t;
 #else
 typedef s32 slobidx_t;
 #endif
+
+unsigned long page_cnt;
+unsigned long available_units;
 
 struct slob_block {
 	slobidx_t units;
@@ -275,7 +273,8 @@ static void *slob_page_alloc(struct page *sp, size_t size, int align)
  */
 static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 {
-	struct page *sp, *next_sp;
+	struct page *sp, *next;
+	struct list_head *prev;
 	struct list_head *slob_list, *temp_list;
 	slob_t *b = NULL;
 	unsigned long flags;
@@ -302,33 +301,31 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		if (sp->units < SLOB_UNITS(size))
 			continue;
 
-		/* Checks if the next slob page is NULL */
-		if(next_sp == NULL)
-			next_sp = sp;
+		/* Attempt to alloc */
+		prev = sp->list.prev;
+		b = slob_page_alloc(sp, size, align);
+		if (!b)
+			continue;
+
+		/* Improve fragment distribution and reduce our average
+		 * search time by starting our next search here. (see
+		 * Knuth vol 1, sec 2.5, pg 449) */
+		if (prev != slob_list->prev &&
+				slob_list->next != prev->next)
+			list_move_tail(slob_list, prev->next);
+		break;
 		
-		/*** Best Fit Algorithm Implementation ***/
-		
-		/* Find the smallest available page */
-		if(next_sp->units > sp->units)
-			next_sp = sp;
-		
-		/* Attempt allocation on page */
-		if(next_sp != NULL)
-			b = slob_page_alloc(next_sp, size, align);
-		
-		/* Find amount of free space available */
-		/* For each entry within size groupings, get total available units  */
 		temp_list= &free_slob_large;
 		list_for_each_entry(sp, temp_list, list){
-			availability = availability + sp->units;
+			available_units = available_units + sp->units;
 		}
 		temp_list= &free_slob_medium;
 		list_for_each_entry(sp, temp_list, list){
-			availability = availability + sp->units;
+			available_units = available_units + sp->units;
 		}
 		temp_list= &free_slob_small;
 		list_for_each_entry(sp, temp_list, list){
-			availability = availability + sp->units;
+			available_units = available_units + sp->units;
 		}
 	}
 	spin_unlock_irqrestore(&slob_lock, flags);
@@ -349,10 +346,8 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		set_slob_page_free(sp, slob_list);
 		b = slob_page_alloc(sp, size, align);
 		BUG_ON(!b);
+		page_cnt++;
 		spin_unlock_irqrestore(&slob_lock, flags);
-		
-		/* Increment page count */
-		++page_count2;
 	}
 	if (unlikely((gfp & __GFP_ZERO) && b))
 		memset(b, 0, size);
@@ -387,10 +382,7 @@ static void slob_free(void *block, int size)
 		__ClearPageSlab(sp);
 		page_mapcount_reset(sp);
 		slob_free_pages(b, 0);
-		
-		/* Decrease page count */
-		--page_count2;
-		
+		page_cnt--;
 		return;
 	}
 
@@ -662,6 +654,16 @@ struct kmem_cache kmem_cache_boot = {
 	.align = ARCH_KMALLOC_MINALIGN,
 };
 
+//syscalls
+asmlinkage long sys_slob_used(void){
+	long used_units = SLOB_UNITS(PAGE_SIZE) * page_cnt;
+	return used_units;
+}
+
+asmlinkage long sys_slob_free(void){
+	return available_units;
+}
+
 void __init kmem_cache_init(void)
 {
 	kmem_cache = &kmem_cache_boot;
@@ -673,11 +675,5 @@ void __init kmem_cache_init_late(void)
 	slab_state = FULL;
 }
 
-asmlinkage long sys_call_slob_used(void){
-	long used_units = SLOB_UNITS(PAGE_SIZE) * page_count2;
-	return used_units;
-}
 
-asmlinkage long sys_call_slob_free(void){
-	return availability;
-}
+
