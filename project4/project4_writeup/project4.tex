@@ -3,6 +3,8 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{caption}
+\usepackage{color}
+\usepackage{listings}
 \newcommand\tab[1][1cm]{\hspace*{#1}}
 
 \usepackage[utf8]{inputenc}
@@ -25,7 +27,7 @@
     
     \begin{center}
         \section*{Abstract}
-        This document contains the design for necessary SLOB first-fit algorithms, a version control log table, a work log, and answers to the provided questions. The solution to Project 4 can be deduced from the previously mentioned sections, as well as the implementation. The purpose of this project was to better our understanding of *not sure yet*
+        This document contains the design for necessary SLOB first-fit algorithms, a version control log table, a work log, and answers to the provided questions. The solution to Project 4 can be deduced from the previously mentioned sections, as well as the implementation. The purpose of this project was to better our understanding of allocation algorithms and system calls.
     \end{center}
     
     
@@ -34,15 +36,15 @@
     
     \section*{Design for Implementation of Necessary Algorithms}
     
-    %\begin{figure}[h]
-    %    \includegraphics[width=8cm, height=11cm]{Project4_outline_800x800_p1}
-    %    \centering
-    %    \captionsetup{justification=centering}
-    %    \caption{Handwritten pre-implementation design notes.}
-    %\end{figure}
+    \begin{figure}[h]
+        \includegraphics[width=12cm, height=17cm]{Project4_outline-page-001}
+        \centering
+        \captionsetup{justification=centering}
+        \caption{Handwritten pre-implementation design notes.}
+    \end{figure}
   
 
-    \vspace{6mm}
+    \newpage
     
     
     \section*{Version Control Log}
@@ -55,6 +57,17 @@
         \begin{center}
         \def\arraystretch{1.1}
         \begin{tabular}{ | p{8.2cm} | }
+            \hline
+            commit 8efddef23396135ebe4ef4db4fa4cccb53b07587 \\
+            Author: armatasc <armatasc@onid.oregonstate.edu> \\
+            Date:   Mon Nov 28 20:46:39 2016 -0800 \\ 
+            commit message: Pushing final code changes, as \\ 
+            well as SLOB fragmentation measuring program. \\
+            \hline
+            commit 3acd201e9919a082c3621b2e86ddd0a4b676bd04 \\
+            Author: mihaidan (danm@oregonstate.edu) \\
+            Date:   Mon Nov 28 17:29:34 2016 -0800 \\
+            commit message: updated project write-up \\
             \hline
             commit 07db444726d8595486569dff2597e4740bbb1333 \\
             Author: mihaidan (danm@oregonstate.edu) \\
@@ -85,15 +98,24 @@
     \begin{itemize}
         \item Friday, 11/25:
             \begin{itemize} 
-                \item 
+                \item After gaining some insight to the SLAB/SLOB project in class, we began planning and outlining the assignment.
+                \item The project was going to consist of a few main portions: A program to measure slob.c fragmentation metrics, a best-fit algorithm (designed/edited in slob.c), and implementation of custom system calls to get the metrics.
+                \item We posted the preliminary project outline doc to GitHub and began the slob.c code, as well as understanding how to create custom system calls.
         	\end{itemize}
         \item Sunday, 11/27:
             \begin{itemize} 
-                \item 
+                \item Today, we nearly completed a large portion of the coding changes required to run best-fit in slob.c... 
+                \item Within slob.c, we created syscall definitions to measure fragmentation metrics for our algorithms (first-fit and best-fit).
+                \item We created (a rough attempt at) the best-fit algorithm, though we ran into issues when we attempted to compile our new kernel and image (new slob code; set in make menuconfig) and the kernel would crash.
+                \item Because the "target remote :5517" (to target our Qemu kernel) failed get a response from our kernel, we had to trouble shoot numerous alternatives, including the syscall table, slob.c, qemu parameters, previous assignment menuconfigs, etc... We later found out the slob.c code and the inconsistent order of the system call declarations were causing our issues. 
+                \item Lastly, we made final changes to the 32 bit system call table and the syscalls.h header file to reference our new "sys\texttt{\_}slob\texttt{\_}free" and "sys\texttt{\_}slob\texttt{\_}used".
         	\end{itemize}
         \item Monday, 11/28:
             \begin{itemize} 
-                \item 
+                \item We did some more research pertaining to system call mechanics and implementation. We figured out where we need to declare the system calls in order for them to be recognized by the kernel.
+                \item Once me made appropriate changes to slob.c and necessary syscall files, our kernel was able to run.
+                \item From within the vmlinux kernel, we created a file "test.c" to test our system calls, 353 (slob\texttt{\_}used) and 354 (slob\texttt{\_}free), to ensure our slob.c code was accurate.
+        	    \item Pushed the final changes to GitHub, along with our syscall\texttt{\_}32.tbl, syscalls.h, and slob.c code changes.
         	\end{itemize}
     \end{itemize}
     
@@ -107,7 +129,46 @@
         \begin{itemize}
             \item \tab The main point of this assignment was to familiarize us with the implementation of various memory allocation algorithms. Specifically, this assignment highlighted the first-fit and best-fit allocation algorithms. The first-fit algorithm places a specified block in the first available spot. The best-fit algorithm traverses through all available pages until an ideal spot is found for the specified block of memory.\\
             \tab Both of these algorithm come with different benefits and are each used in different scenarios. First-fit allocation is more efficient than best-fit because it may not necessarily need to traverse the whole page to find a suitable spot. This first-fit advantage is presented with a clear disadvantage when compared to best-fit allocation. Best-fit allocation leads to a more organized outcome, as the first spot found may not be the best fitting. As previously mentioned, there are used depending on the intention of the engineer and the purpose of the machine.\\
-            \tab System call implementation was also a learning opportunity in this assignment. By implementing the \texttt{slob\_used} and \texttt{slob\_free} system calls, we got first hand experience with the mechanics behind system calls.
+            \tab System call implementation was also a learning opportunity in this assignment. By implementing the \texttt{slob\_used} and \texttt{slob\_free} system calls, we got first hand experience with the mechanics behind system calls. \\
+            The best-fit implementation which replaced the first-fit algorithm is shown below.
+            
+            \lstset{language=C++,
+                    basicstyle=\ttfamily,
+                    keywordstyle=\color{blue}\ttfamily,
+                    stringstyle=\color{red}\ttfamily,
+                    commentstyle=\color{green}\ttfamily,
+                    morecomment=[l][\color{magenta}]{\#}
+                }
+                    
+            \begin{lstlisting}
+                /*** Best Fit Algorithm Implementation ***/
+                /* Checks if the next slob page is NULL */
+    		if(next_sp == NULL)
+    			next_sp = sp;
+    		
+    		/* Find the smallest available page */
+    		if(next_sp->units > sp->units)
+    			next_sp = sp;
+    		
+    		/* Attempt allocation on page */
+    		if(next_sp != NULL)
+    			b = slob_page_alloc(next_sp, size, align);
+    	
+    		/* Getting fragmentation metrics */
+    		temp_list= &free_slob_large;
+    		list_for_each_entry(sp, temp_list, list){
+    			available_units = available_units + sp->units;
+    		}
+    		temp_list= &free_slob_medium;
+    		list_for_each_entry(sp, temp_list, list){
+    			available_units = available_units + sp->units;
+    		}
+    		temp_list= &free_slob_small;
+    		list_for_each_entry(sp, temp_list, list){
+    			available_units = available_units + sp->units;
+    		}
+            \end{lstlisting}
+            
         \end{itemize}
         \item How did you personally approach the problem? Design decisions, algorithm, etc.
         \begin{itemize}
@@ -116,7 +177,7 @@
         \end{itemize}
         \item How did you ensure your solution was correct? Testing details, for instance.
         \begin{itemize}
-            \item Answer.
+            \item \tab A portion of this assignment was focused on testing the efficiency and fragmentation of the first-fit and best-fit allocation algorithms for block allocation. Designing and implementing a tester was significantly easier than the implementation of the SLOB or system calls. The \texttt{test.c} file consists of two system calls made to \texttt{slob\_free} and \texttt{slob\_used}, which return the amount of free and used space, respectively. This test file can be ran on both the first-fit and best-fit allocation algorithms. As expected, the results show that the best-fit allocation algorithm yields lower fragmentation than the first-fit algorithm. As stated before, this is due to the fact that best-fit produces more organized pages.
         \end{itemize}
         \item What did you learn?
         \begin{itemize}
