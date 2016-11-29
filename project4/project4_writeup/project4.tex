@@ -3,6 +3,7 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{caption}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
 
 \usepackage[utf8]{inputenc}
 \geometry{margin=0.75in}
@@ -33,12 +34,12 @@
     
     \section*{Design for Implementation of Necessary Algorithms}
     
-    \begin{figure}[h]
-            \includegraphics[width=8cm, length=11cm]{Project4_outline_800x800_p1}
-            \centering
-            \captionsetup{justification=centering}
-            \caption{Pseudocode}
-        \end{figure}
+    %\begin{figure}[h]
+    %    \includegraphics[width=8cm, height=11cm]{Project4_outline_800x800_p1}
+    %    \centering
+    %    \captionsetup{justification=centering}
+    %    \caption{Handwritten pre-implementation design notes.}
+    %\end{figure}
   
 
     \vspace{6mm}
@@ -53,9 +54,22 @@
         
         \begin{center}
         \def\arraystretch{1.1}
-        \begin{tabular}{ | p{8cm} | }
+        \begin{tabular}{ | p{8.2cm} | }
             \hline
-            
+            commit 07db444726d8595486569dff2597e4740bbb1333 \\
+            Author: mihaidan (danm@oregonstate.edu) \\
+            Date:   Sun Nov 27 21:15:18 2016 -0800 \\
+            commit message: updated slob.c file \\
+            \hline
+            commit 659fee07c647c311cacc075aee865374221163f4 \\
+            Author: mihaidan (danm@oregonstate.edu) \\ 
+            Date:   Fri Nov 25 17:45:28 2016 -0800 \\
+            commit message: design for implementation \\
+            \hline
+            commit e064051f8e12ba12162acf69f872b8cb04382e85 \\
+            Author: mihaidan (danm@oregonstate.edu) \\
+            Date:   Thu Nov 24 22:22:05 2016 -0800 \\
+            commit message: project4 initiated \\
             \hline
         \end{tabular}
         \end{center}
@@ -69,15 +83,15 @@
     
     
     \begin{itemize}
-        \item Day, 11/??:
+        \item Friday, 11/25:
             \begin{itemize} 
                 \item 
         	\end{itemize}
-        \item Day, 11/??:
+        \item Sunday, 11/27:
             \begin{itemize} 
                 \item 
         	\end{itemize}
-        \item Day, 11/??:
+        \item Monday, 11/28:
             \begin{itemize} 
                 \item 
         	\end{itemize}
@@ -91,11 +105,14 @@
     \begin{enumerate}
         \item What do you think the main point of this assignment is?
         \begin{itemize}
-            \item Answer.
+            \item \tab The main point of this assignment was to familiarize us with the implementation of various memory allocation algorithms. Specifically, this assignment highlighted the first-fit and best-fit allocation algorithms. The first-fit algorithm places a specified block in the first available spot. The best-fit algorithm traverses through all available pages until an ideal spot is found for the specified block of memory.\\
+            \tab Both of these algorithm come with different benefits and are each used in different scenarios. First-fit allocation is more efficient than best-fit because it may not necessarily need to traverse the whole page to find a suitable spot. This first-fit advantage is presented with a clear disadvantage when compared to best-fit allocation. Best-fit allocation leads to a more organized outcome, as the first spot found may not be the best fitting. As previously mentioned, there are used depending on the intention of the engineer and the purpose of the machine.\\
+            \tab System call implementation was also a learning opportunity in this assignment. By implementing the \texttt{slob\_used} and \texttt{slob\_free} system calls, we got first hand experience with the mechanics behind system calls.
         \end{itemize}
         \item How did you personally approach the problem? Design decisions, algorithm, etc.
         \begin{itemize}
-            \item Answer
+            \item \tab Before any project planning or implementation, we researched the best-fit algorithm and what it entailed. Simply put, the best-fit algorithm searches through all the pages until a desired spot is found. The existing implementation of the slob.c file inside our kernel used the first-fit algorithm because it took the specified block of memory and placed it in the first spot that offered enough free space. In order to change this to our desired algorithm, we needed to replace the first-fit with the best-fit allocation in the slob.c file, specifically in the \texttt{slob\_alloc(...)} function.\\
+            \tab Being unsure about the correct syntax and mechanics of system call, we were faced with a bit of a challenge. Extensive research led to the discovery of several files that needed to be modified in order to integrate new system calls into the system. After adjusting our kernel with the new found information, we achieved proper linking between the different files.
         \end{itemize}
         \item How did you ensure your solution was correct? Testing details, for instance.
         \begin{itemize}
@@ -103,7 +120,8 @@
         \end{itemize}
         \item What did you learn?
         \begin{itemize}
-            \item Answer.
+            \item \tab This assignment was filled with learning opportunities. The first being that there are different algorithms when deciding block allocation. The two algorithms covered in this assignment are best-fit and first-fit. Neither is better than the other, but each have their own advantages that are accounted for when deciding which to use on a system. While first-fit may be faster, best-fit provides better organization in the available pages.\\
+            \tab As previously mentioned, the system call implementation was also another learning opportunity. We were given first hand experience as how to make a system call that returns meaningful information about the machine. Pretty neat.
         \end{itemize}
     \end{enumerate}
     
