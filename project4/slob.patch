@@ -1,0 +1,78 @@
+--- CS444/old_slob.c	2016-11-28 20:57:40.778920000 -0800
++++ mm/slob.c			2016-11-28 20:56:58.000000000 -0800
+@@ -59,20 +59,20 @@
+        * in order to prevent random node placement.
+        */
++		#include <linux/syscalls.h>
++		#include <linux/linkage.h>
+
+@@ -94,20 +94,20 @@
+        typedef s32 slobidx_t;
+        #endif
+
++		unsigned long page_cnt;
++		unsigned long available_units;
+
+        struct slob_block {
+        slobidx_t units;
+
+@@ -301,20 +301,20 @@
+ 		if (sp->units < SLOB_UNITS(size))
+ 			continue;
+ 
+-		/* Attempt to alloc */
+-		prev = sp->list.prev;
+-		b = slob_page_alloc(sp, size, align);
+-		if (!b)
+-			continue;
+-
+-		/* Improve fragment distribution and reduce our average
+-		 * search time by starting our next search here. (see
+-		 * Knuth vol 1, sec 2.5, pg 449) */
+-		if (prev != slob_list->prev &&
+-				slob_list->next != prev->next)
+-			list_move_tail(slob_list, prev->next);
+-		break;
++		/* Checks if the next slob page is NULL */
++		if(next_sp == NULL)
++			next_sp = sp;
++		
++		/*** Best Fit Algorithm Implementation ***/
++		/* Find the smallest available page */
++		if(next_sp->units > sp->units)
++			next_sp = sp;
+ 		
++		/* Attempt allocation on page */
++		if(next_sp != NULL)
++			b = slob_page_alloc(next_sp, size, align);
++	
++		/* Getting fragmentation metrics */
++ 		temp_list= &free_slob_large;
++		list_for_each_entry(sp, temp_list, list){
++			available_units = available_units + sp->units;
++		}
++		temp_list= &free_slob_medium;
++		list_for_each_entry(sp, temp_list, list){
++			available_units = available_units + sp->units;
++		}
++		temp_list= &free_slob_small;
++		list_for_each_entry(sp, temp_list, list){
++			available_units = available_units + sp->units;
++		}
+        }
+        spin_unlock_irqrestore(&slob_lock, flags);
+	
++++ arch/x86/syscalls/syscalls_32.tbl	2016-11-28 20:56:58.000000000 -0800
+@@ -362,20 +363,20 @@
+        351     i386    sched_setattr           sys_sched_setattr
+        352     i386    sched_getattr           sys_sched_getattr
++		353     i386    slob_used               sys_slob_used
++		354     i386    slob_free               sys_slob_free
+
++++ include/linux/syscalls.h	2016-11-28 20:56:58.000000000 -0800
+@@ -858,20 +858,20 @@
+        asmlinkage long sys_finit_module(int fd, const char __user *uargs, int flags);
++		asmlinkage long sys_slob_used(void);
++		asmlinkage long sys_slob_free(void);
+        #endif
+

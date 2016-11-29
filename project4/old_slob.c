@@ -301,20 +301,20 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		if (sp->units < SLOB_UNITS(size))
 			continue;
 
-		/* Checks if the next slob page is NULL */
-		if(next_sp == NULL)
-			next_sp = sp;
+		/* Attempt to alloc */
+		prev = sp->list.prev;
+		b = slob_page_alloc(sp, size, align);
+		if (!b)
+			continue;
+
+		/* Improve fragment distribution and reduce our average
+		 * search time by starting our next search here. (see
+		 * Knuth vol 1, sec 2.5, pg 449) */
+		if (prev != slob_list->prev &&
+				slob_list->next != prev->next)
+			list_move_tail(slob_list, prev->next);
+		break;
 		
-		/*** Best Fit Algorithm Implementation ***/
-		/* Find the smallest available page */
-		if(next_sp->units > sp->units)
-			next_sp = sp;
-		
-		/* Attempt allocation on page */
-		if(next_sp != NULL)
-			b = slob_page_alloc(next_sp, size, align);
-	
-		/* Getting fragmentation metrics */
 		temp_list= &free_slob_large;
 		list_for_each_entry(sp, temp_list, list){
 			available_units = available_units + sp->units;
